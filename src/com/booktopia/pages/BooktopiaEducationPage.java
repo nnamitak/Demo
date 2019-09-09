@@ -2,12 +2,8 @@ package com.booktopia.pages;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -17,47 +13,58 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.FindBy;
-import org.testng.Assert;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 
-public class BooktopiaChildrenPage extends BasePage{
-
+public class BooktopiaEducationPage extends BasePage{
 	//Initialization of web-elements
-	public BooktopiaChildrenPage(WebDriver driver) {
+	public BooktopiaEducationPage(WebDriver driver) {
 		super(driver);
 	}
 
-	public void searchBook(int row) throws IOException{
+	public void searchEducationBook() throws IOException{
 		Actions actions = new Actions(driver);
-
+		driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);
+		WebElement preschoolTab = (new WebDriverWait(driver, 10))
+				  .until(ExpectedConditions.elementToBeClickable(By.xpath("//ul[@id='head-quick-links']/li[1]")));
+		//WebElement preschoolTab = driver.findElement(By.xpath("//ul[@id='head-quick-links']/li[1]"));
+		actions.moveToElement(preschoolTab).click().perform();
+		//preschoolTab.click();
+		
+		driver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
+		WebElement startingSchool = (new WebDriverWait(driver, 10))
+				  .until(ExpectedConditions.elementToBeClickable(By.xpath("//section[@id='pre-school']/ul/li[1]")));
+		
+		//WebElement startingSchool = driver.findElement(By.xpath("//section[@id='pre-school']/ul/li[1]"));
+		actions.moveToElement(startingSchool).click().perform();
+		//startingSchool.click();
+		
+		driver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
 		WebElement searchText = driver.findElement(By.id("refine-search-box"));	
+				
 		WebElement searchGo = driver.findElement(By.xpath("//button[@class='submit refine-search-submit']"));	
-
-		actions.moveToElement(searchText);
-		actions.click();
+	
 
 		//Reading data from Excel
 		waitForLoad(driver);  
-		FileInputStream fis = new FileInputStream(new File("C:\\Users\\Namita\\eclipse-workspace\\org.booktopia.project\\data\\Booktopia.xlsx"));
+		FileInputStream fis = new FileInputStream(new File("E:\\Namita\\projects\\Demo\\data\\Booktopia.xlsx"));
+	
 		Reporter.log("File Opened .... ",true);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
 		XSSFSheet sheet = workbook.getSheetAt(0);
 
-
-		//sString h1 = sheet.getRow(count).getCell(0).getStringCellValue();
-		String bookName = sheet.getRow(row).getCell(0).getStringCellValue();
+		String bookName = sheet.getRow(1).getCell(2).getStringCellValue();
 		waitForLoad(driver);
 		searchText.sendKeys(bookName);
 		waitForLoad(driver);
 
-		Reporter.log("Searching a book... ",true);
+		Reporter.log("Searching a Educational book... ",true);
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		searchGo.click();
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
 		List<WebElement> lstElements = driver.findElements(By.xpath("(//*[@class='product-results']/li)"));
-		System.out.println("Book name is " + lstElements);
 		lstElements.get(0).click();
 	
 		String winHandleBefore = driver.getWindowHandle();
@@ -81,4 +88,6 @@ public class BooktopiaChildrenPage extends BasePage{
 		}
 		driver.switchTo().window(winHandleBefore);
 	}
+	
+	
 }
